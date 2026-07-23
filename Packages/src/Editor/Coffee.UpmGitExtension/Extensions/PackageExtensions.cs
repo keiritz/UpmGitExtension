@@ -39,7 +39,23 @@ namespace Coffee.UpmGitExtension
         public static UpmPackage UpdateVersionsSafety(this UpmPackage self,
             IEnumerable<UpmPackageVersion> versions = null)
         {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
+            var services = UnityEditor.ScriptableSingleton<ServicesContainer>.instance;
+            var factory = services.Resolve<UpmPackageFactory>();
+            var cache = factory.Get("m_UpmCache") as IUpmCache;
+            var packageName = self.name;
+
+            var data = cache.GetPackageData(packageName);
+            var upmVersionList = new UpmVersionList(
+                data,
+                PackageTag.None,
+                services.Resolve<IIOProxy>(),
+                services.Resolve<IApplicationProxy>(),
+                services.Resolve<IUnityConnectProxy>(),
+                true);
+
+            self = factory.CreatePackage(self.name, upmVersionList);
+#elif UNITY_6000_0_OR_NEWER
             var factory = UnityEditor.ScriptableSingleton<ServicesContainer>.instance.Resolve<UpmPackageFactory>();
             var cache = factory.Get("m_UpmCache") as IUpmCache;
             var packageName = self.name;

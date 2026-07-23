@@ -82,14 +82,22 @@ namespace Coffee.UpmGitExtension
 
         public static void Install(string packageId)
         {
+#if UNITY_6000_5_OR_NEWER
+            _upmClient.AddByUrl(packageId, OperationType.Install);
+#else
             _upmClient.AddByUrl(packageId);
+#endif
         }
 
         public static void Uninstall(string packageId)
         {
             var i = packageId.IndexOf('@');
             var packageName = packageId.Substring(0, i);
+#if UNITY_6000_5_OR_NEWER
+            _upmClient.RemoveByName(packageName, OperationType.Remove);
+#else
             _upmClient.RemoveByName(packageName);
+#endif
         }
 
         public static IEnumerable<UpmPackage> GetUpmPackages()

@@ -8,9 +8,12 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 #if UNITY_2021_1_OR_NEWER
 using UnityEditor.PackageManager.UI.Internal;
-
 #else
 using UnityEditor.PackageManager.UI;
+#endif
+
+#if UNITY_6000_5_OR_NEWER
+using PackageListScrollView = UnityEditor.PackageManager.UI.Internal.PackageListView;
 #endif
 
 namespace Coffee.UpmGitExtension
@@ -111,7 +114,7 @@ namespace Coffee.UpmGitExtension
             {
                 // Add button to view repository in browser.
                 var button = new Button(ViewRepoOnBrowser) { text = "View repository" };
-                button.AddClasses("link");
+                button.AddToClassList("link");
 
 #if UNITY_2023_1_OR_NEWER
                 var links = _packageDetails
@@ -310,7 +313,11 @@ namespace Coffee.UpmGitExtension
 
                 if (latest != null && latest.version > installed.version)
                 {
+#if UNITY_6000_5_OR_NEWER
+                    var packageItem = scrollView.Call("GetPackageItem", package.uniqueId) as VisualElement;
+#else
                     var packageItem = scrollView.GetPackageItem(package.uniqueId);
+#endif
                     if (packageItem == null)
                     {
                         continue;
